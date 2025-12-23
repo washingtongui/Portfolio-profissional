@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Portfólio</title>
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/fotoperfil.css' %}">
+</head>
+
+<body>
+
+    <header>
+        <section class="container-header">
+            <nav class="header-navbar">
+                <ul class="header-menu">
+                    <li><a href="{% url 'index' %}">Início</a></li>
+                    <li><a href="{% url 'perfil' %}">Perfil</a></li>
+                    <li><a href="{% url 'projetos' %}">Meus Projetos</a></li>
+                    <li><a href="{% url 'contato' %}">Contate-me</a></li>
+                    <li><a href="{% url 'index' %}">YouTube</a></li>
+                </ul>
+            </nav>
+        </section>
+    </header>
+
+    <main>
+        <section class="hero-container">
+            <div class="hero-content">
+                <h5 class="hero-subtitle">Engenheiro de Software em Formação</h5>
+                <h1 class="hero-title">Olá, eu sou o <span>Washington</span>.</h1>
+                <p class="hero-description">
+                    Desenvolvo soluções escaláveis e inteligentes. Estudante do 5º período,
+                    apaixonado por transformar dados em decisões e código em realidade.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="{% url 'projetos' %}" class="btn btn-primary">Ver Meus Projetos</a>
+                    <a href="#" class="btn btn-secondary">Baixar CV</a>
+                </div>
+
+                <div class="tech-stack">
+                    <p>Atuando focado em Modelagem de Dados e Arquitetura Web:</p>
+                    <div class="tech-icons">
+                        <span>Html</span>
+                        <span>Css</span>
+                        <span>JS</span>
+                        <span>Python</span>
+                        <span>Sqlite</span>
+                        <span>MySQL</span>
+                        <span>SQL Server</span>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="photo-border">
+                    <img src="{% static 'img/personagem.png' %}" alt="Foto do Desenvolvedor">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+    </footer>
+
+</body>
+
+</html>
