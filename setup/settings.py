@@ -6,24 +6,27 @@ from django.contrib.messages import constants as messages
 # Caminho base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Tenta carregar o arquivo .env
+# Tenta carregar o arquivo .env (Apenas para local)
 dotenv_path = os.path.join(BASE_DIR, '.env')
-load_dotenv(dotenv_path)
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 # --- SEGURANÇA ---
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-24zdo%4hu76s97ad4n')
 
-# No seu PC (.env) será True. No Railway (Painel) será False.
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+# No Railway, forçamos True agora para ver o erro real se ele persistir
+DEBUG = os.getenv('DEBUG', 'True').upper() == 'TRUE'
 
-ALLOWED_HOSTS = ['*']
+# Domínios permitidos
+ALLOWED_HOSTS = [
+    '*', 'portfolio-profissional-production.up.railway.app', '.up.railway.app']
 
-# Essencial para HTTPS no Railway
-CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
+# Essencial para HTTPS e formulários no Railway
+CSRF_TRUSTED_ORIGINS = [
+    'https://portfolio-profissional-production.up.railway.app', 'https://*.up.railway.app']
 
 # Application definition
 INSTALLED_APPS = [
-    # DEVE SER O PRIMEIRO para o CSS não quebrar localmente
     'whitenoise.runserver_nostatic',
     'jazzmin',
     'django.contrib.admin',
@@ -37,7 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Gerencia arquivos estáticos
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,15 +69,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'setup.wsgi.application'
 
-# Database - Lendo do .env (Local) ou do Painel (Railway)
+# Database - Configuração Robusta para Railway
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
+        'NAME': os.getenv('DB_NAME', 'railway'),
+        'USER': os.getenv('DB_USER', 'root'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -108,11 +115,17 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Se estiver em produção (Railway), usa compressão do WhiteNoise
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Armazenamento otimizado para produção
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
-# --- CONFIGURAÇÕES DE E-MAIL (GMAIL) ---
+# --- CONFIGURAÇÕES DE E-MAIL ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -120,15 +133,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
-# Internationalization
+# Localização
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
@@ -136,7 +141,6 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- MAPEAMENTO DE MENSAGENS PARA BOOTSTRAP ---
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
     messages.SUCCESS: 'success',
