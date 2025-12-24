@@ -35,7 +35,7 @@ def contato_view(request):
         if not v_assunto or not v_contato or not v_mensagem:
             messages.error(
                 request, "Por favor, preencha todos os campos corretamente.")
-            return redirect('contato')
+            return redirect(request.path_info)
 
         # --- BLOCO ANTI-SPAM (3 mensagens em 24h) ---
         tempo_limite = timezone.now() - timedelta(hours=24)
@@ -47,7 +47,7 @@ def contato_view(request):
         if contagem >= 3:
             messages.error(
                 request, "Limite diário atingido. Tente novamente em 24h.")
-            return redirect('contato')
+            return redirect(request.path_info)
 
         try:
             # 2. Salva no Banco de Dados
@@ -72,23 +72,25 @@ def contato_view(request):
             text_content = strip_tags(html_content)
 
             # 4. Envio do E-mail (Blindado com fail_silently)
+            # Usamos settings.EMAIL_HOST_USER para garantir que o remetente seja o autenticado
             send_mail(
-                assunto_email,
-                text_content,
-                settings.EMAIL_HOST_USER,
-                ['washingtongui678@gmail.com'],
-                fail_silently=True,  # Impede Erro 500 se o Gmail falhar
+                subject=assunto_email,
+                message=text_content,
+                from_email=settings.EMAIL_HOST_USER,
+                # Envia para você mesmo
+                recipient_list=[settings.EMAIL_HOST_USER],
+                fail_silently=True,  # Crucial: impede erro 500 se o Gmail bloquear o Railway
                 html_message=html_content,
             )
 
             messages.success(
                 request, "Sua mensagem foi enviada! Em breve entrarei em contato.")
-            return redirect('contato')
+            return redirect(request.path_info)
 
         except Exception as e:
             print(f"Erro ao processar contato: {e}")
             messages.error(
                 request, "Houve um erro técnico, mas sua mensagem foi gravada.")
-            return redirect('contato')
+            return redirect(request.path_info)
 
     return render(request, 'contate-me.html')
