@@ -9,7 +9,6 @@
 body {
     min-height: 100vh;
     width: 100%;
-    /* O ../ sai da pasta css e permite entrar na pasta img */
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/papeldeparede.png');
     background-size: cover;
     background-position: center;
@@ -23,36 +22,58 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    margin: 30px auto;
-    width: 80%;
-    padding: 20px 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: sticky;
-    top: 20px;
-    z-index: 1000;
+
+    /* SOLUÇÃO PARA O TAMANHO */
+    margin: 30px auto !important;
+    /* Centraliza horizontalmente */
+    width: 90% !important;
+    /* Ocupa 90% em telas pequenas */
+    max-width: 1000px !important;
+    /* TRAVA o tamanho máximo em telas grandes */
+    height: 70px !important;
+    /* Trava a altura para não expandir verticalmente */
+
+    padding: 0 40px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: sticky !important;
+    top: 20px !important;
+    z-index: 1000 !important;
 }
 
-.header-menu {
-    display: flex;
-    list-style: none;
-    gap: 40px;
-    align-items: center;
-    justify-content: center;
+/* Usando a classe específica da UL */
+.nav-list {
+    display: flex !important;
+    list-style: none !important;
+    gap: 40px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
 }
 
-.header-menu li a {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: 0.4s;
-    opacity: 0.7;
+/* Usando a classe específica da LI */
+.nav-item {
+    list-style: none !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
-.header-menu li a:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+.nav-item a {
+    color: white !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    transition: 0.4s !important;
+    opacity: 0.7 !important;
+    white-space: nowrap !important;
+    /* Impede o texto de quebrar linha */
+}
+
+.nav-item a:hover {
+    opacity: 1 !important;
+    transform: translateY(-2px) !important;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8) !important;
 }

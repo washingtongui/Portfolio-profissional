@@ -8,9 +8,7 @@
     <title>Meu Portfólio</title>
 
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
     <link rel="stylesheet" href="{% static 'css/fotoperfil.css' %}">
 </head>
 
@@ -19,12 +17,12 @@
     <header>
         <section class="container-header">
             <nav class="header-navbar">
-                <ul class="header-menu">
-                    <li><a href="{% url 'index' %}">Início</a></li>
-                    <li><a href="{% url 'perfil' %}">Perfil</a></li>
-                    <li><a href="{% url 'projetos' %}">Meus Projetos</a></li>
-                    <li><a href="{% url 'contato' %}">Contate-me</a></li>
-                    <li><a href="{% url 'index' %}">YouTube</a></li>
+                <ul class="header-menu nav-list">
+                    <li class="nav-item"><a href="{% url 'index' %}">Início</a></li>
+                    <li class="nav-item"><a href="{% url 'perfil' %}">Perfil</a></li>
+                    <li class="nav-item"><a href="{% url 'projetos' %}">Meus Projetos</a></li>
+                    <li class="nav-item"><a href="{% url 'contato' %}">Contate-me</a></li>
+                    <li class="nav-item"><a href="{% url 'index' %}">YouTube</a></li>
                 </ul>
             </nav>
         </section>
@@ -55,7 +53,6 @@
                         <span>Sqlite</span>
                         <span>MySQL</span>
                         <span>SQL Server</span>
-
                     </div>
                 </div>
             </div>
