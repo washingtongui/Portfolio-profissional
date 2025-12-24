@@ -1,0 +1,64 @@
+.box-main {
+    display: flex;
+    gap: 2rem;
+    /* espaço entre os cards */
+    justify-content: center;
+    align-items: stretch;
+    /* força os cards a terem mesma altura */
+    margin-top: 50px;
+    flex-wrap: wrap;
+    /* Garante que quebre linha no celular */
+}
+
+.card {
+    width: 18rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fff !important;
+    /* Força o fundo branco do card */
+    border: none !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* leve elevação */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    /* sobe um pouco no hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    /* sombra mais forte */
+}
+
+.card-body {
+    flex: 1;
+    /* ocupa o espaço restante */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem !important;
+}
+
+.card-title {
+    text-align: center;
+    font-weight: 700;
+    color: #333 !important;
+    /* Força o título a não ser branco */
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    text-align: justify;
+    color: #444 !important;
+    /* Força o texto a não ser branco */
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.card-body .btn {
+    width: 100%;
+    font-weight: 600;
+    margin-top: 15px;
+}
