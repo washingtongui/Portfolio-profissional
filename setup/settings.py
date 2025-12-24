@@ -10,20 +10,21 @@ dotenv_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path)
 
 # --- SEGURANÇA ---
-# Em produção, usamos a chave do .env. Se não achar, usa a padrão (evita erro)
 SECRET_KEY = os.getenv(
     'SECRET_KEY', 'django-insecure-24zdo%4hu76s97ad4n#f^p!!a^ku3^@_!y#(rlk3e4yb!dizn4')
 
-# MUDANÇA PARA DEPLOY: DEBUG deve ser False em produção
+# No Railway, o DEBUG deve ser False (ele lerá do painel de variáveis)
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Liberar o domínio do Railway e o acesso local
-# Depois de subir, você pode colocar ['seu-projeto.up.railway.app', 'localhost']
+# Liberar domínios
 ALLOWED_HOSTS = ['*']
+
+# Essencial para login no Admin via Railway (HTTPS)
+CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
 
 # Application definition
 INSTALLED_APPS = [
-    'jazzmin',
+    'jazzmin',  # Mantido no topo
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,13 +32,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'whitenoise.runserver_nostatic',  # Adicionado para arquivos estáticos
+    'whitenoise.runserver_nostatic',  # Para arquivos estáticos em produção
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # Adicionado para servir CSS/JS no deploy
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Servidor de arquivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -65,7 +65,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'setup.wsgi.application'
 
-# Database - Railway (Puxando via ENV para segurança)
+# Database - Configurada para Railway
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -77,14 +77,17 @@ DATABASES = {
     }
 }
 
-# Configurações Jazzmin (Mantidas como você pediu)
+# --- CONFIGURAÇÕES DO JAZZMIN ---
 JAZZMIN_SETTINGS = {
     "site_title": "Admin Portfólio",
     "site_header": "Washington",
     "site_brand": "Dashboard Tom",
+
+    # Mantive os logos como None para você decidir depois
     "site_logo": None,
     "login_logo": None,
     "site_logo_login": None,
+
     "welcome_sign": "Bem-vindo ao Gerenciamento do seu Portfólio",
     "copyright": "Washington 2025",
     "search_model": ["core.Contato"],
@@ -105,12 +108,19 @@ JAZZMIN_UI_CONFIG = {
     "dark_mode_theme": "darkly",
 }
 
-# --- ARQUIVOS ESTÁTICOS EM PRODUÇÃO ---
+# --- ARQUIVOS ESTÁTICOS (WHITENOISE) ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-# Pasta onde o Django vai reunir o CSS para o deploy
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Password validation
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
 
 # Internationalization
 LANGUAGE_CODE = 'pt-br'
