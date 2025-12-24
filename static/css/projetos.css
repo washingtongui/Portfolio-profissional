@@ -1,0 +1,19 @@
+/* Centraliza o conteúdo na tela toda */
+.container-embreve {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    /* Faz o texto ficar no meio da altura da tela */
+}
+
+/* O estilo do nome em cinza escuro */
+.nome-embreve {
+    color: #444444;
+    /* Cinza escuro que você pediu */
+    font-size: 3rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-family: sans-serif;
+}

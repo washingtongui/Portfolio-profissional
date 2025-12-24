@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.contrib.messages import constants as messages
 
 # Caminho base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,21 +11,21 @@ dotenv_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path)
 
 # --- SEGURANÇA ---
-SECRET_KEY = os.getenv(
-    'SECRET_KEY', 'django-insecure-24zdo%4hu76s97ad4n#f^p!!a^ku3^@_!y#(rlk3e4yb!dizn4')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
 
-# No Railway, o DEBUG deve ser False (ele lerá do painel de variáveis)
+# No seu PC (.env) será True. No Railway (Painel) será False.
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Liberar domínios
 ALLOWED_HOSTS = ['*']
 
-# Essencial para login no Admin via Railway (HTTPS)
+# Essencial para HTTPS no Railway
 CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
 
 # Application definition
 INSTALLED_APPS = [
-    'jazzmin',  # Mantido no topo
+    # DEVE SER O PRIMEIRO para o CSS não quebrar localmente
+    'whitenoise.runserver_nostatic',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,12 +33,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'whitenoise.runserver_nostatic',  # Para arquivos estáticos em produção
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Servidor de arquivos estáticos
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Gerencia arquivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -55,6 +55,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -65,15 +66,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'setup.wsgi.application'
 
-# Database - Configurada para Railway
+# Database - Lendo do .env (Local) ou do Painel (Railway)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'railway'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'akIJnidbwTSajgkJOyjiuCdLaCXzCCAF'),
-        'HOST': os.getenv('DB_HOST', 'ballast.proxy.rlwy.net'),
-        'PORT': os.getenv('DB_PORT', '12135'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -82,12 +83,6 @@ JAZZMIN_SETTINGS = {
     "site_title": "Admin Portfólio",
     "site_header": "Washington",
     "site_brand": "Dashboard Tom",
-
-    # Mantive os logos como None para você decidir depois
-    "site_logo": None,
-    "login_logo": None,
-    "site_logo_login": None,
-
     "welcome_sign": "Bem-vindo ao Gerenciamento do seu Portfólio",
     "copyright": "Washington 2025",
     "search_model": ["core.Contato"],
@@ -108,11 +103,22 @@ JAZZMIN_UI_CONFIG = {
     "dark_mode_theme": "darkly",
 }
 
-# --- ARQUIVOS ESTÁTICOS (WHITENOISE) ---
+# --- ARQUIVOS ESTÁTICOS ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Se estiver em produção (Railway), usa compressão do WhiteNoise
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# --- CONFIGURAÇÕES DE E-MAIL (GMAIL) ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -129,3 +135,9 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- MAPEAMENTO DE MENSAGENS PARA BOOTSTRAP ---
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+    messages.SUCCESS: 'success',
+}
