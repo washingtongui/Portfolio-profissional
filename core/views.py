@@ -1,11 +1,10 @@
+import resend  # Importante: certifique-se de ter rodado 'pip install resend'
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Contato
 from django.utils import timezone
 from datetime import timedelta
-from django.core.mail import send_mail
 from django.conf import settings
-from django.utils.html import strip_tags
 
 # --- VIEWS DAS PÁGINAS DO PORTFÓLIO ---
 
@@ -53,30 +52,37 @@ def contato_view(request):
                 mensagem=v_mensagem
             )
 
-            # 2. Tenta enviar o e-mail (Configurado para não travar o site)
-            assunto_email = f"🚀 Novo Contato: {v_assunto}"
-            html_content = f"<b>De:</b> {v_contato}<br><br><b>Mensagem:</b><br>{v_mensagem}"
+            # --- CONFIGURAÇÃO DO RESEND ---
+            # Puxa a chave da variável de ambiente definida no seu settings.py
+            resend.api_key = settings.RESEND_API_KEY
 
-            send_mail(
-                subject=assunto_email,
-                message=strip_tags(html_content),
-                from_email=settings.EMAIL_HOST_USER,  # Seu Gmail (remetente)
-                # Seu Gmail (destinatário)
-                recipient_list=[settings.EMAIL_HOST_USER],
-                fail_silently=False,  # Deixe False para capturarmos o erro real nos logs do Railway
-                html_message=html_content,
-            )
+            # 2. Envia o e-mail via API (Railway permite essa conexão)
+            params = {
+                "from": settings.DEFAULT_FROM_EMAIL,  # "onboarding@resend.dev"
+                "to": ["washingtongui678@gmail.com"],  # Seu e-mail de destino
+                "subject": f"🚀 Novo Contato: {v_assunto}",
+                "html": f"""
+                    <h3>Novo contato do seu Portfólio</h3>
+                    <p><b>De:</b> {v_contato}</p>
+                    <p><b>Assunto:</b> {v_assunto}</p>
+                    <hr>
+                    <p><b>Mensagem:</b></p>
+                    <p>{v_mensagem}</p>
+                """,
+            }
+
+            resend.Emails.send(params)
 
             messages.success(request, "Mensagem enviada com sucesso!")
             return redirect(request.path_info)
 
         except Exception as e:
             # Este erro aparecerá na aba 'Deploy Logs' do seu Railway
-            print(f"--- ERRO DE ENVIO DE E-MAIL NO RAILWAY: {str(e)} ---")
+            print(f"--- ERRO DE ENVIO VIA RESEND NO RAILWAY: {str(e)} ---")
 
             # Avisa o usuário que o dado foi salvo, mas o e-mail falhou
             messages.warning(
-                request, "Sua mensagem foi salva no sistema, mas houve um atraso no aviso por e-mail.")
+                request, "Sua mensagem foi salva no sistema, mas houve um erro ao enviar o alerta por e-mail.")
             return redirect(request.path_info)
 
     return render(request, 'contate-me.html')

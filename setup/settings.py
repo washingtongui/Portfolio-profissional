@@ -105,19 +105,10 @@ STORAGES = {
     },
 }
 
-# --- CONFIGURAÇÕES DE E-MAIL (GMAIL VIA SSL) ---
-# Alterado para Porta 465 para evitar WORKER TIMEOUT no Railway
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = clean_env('EMAIL_USER')
-EMAIL_HOST_PASSWORD = clean_env('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-# Timeout curto para evitar que o site trave se a rede do Railway falhar
-EMAIL_TIMEOUT = 10
+# --- CONFIGURAÇÃO DE E-MAIL (RESEND API) ---
+# Removidas configurações de SMTP do Gmail que o Railway bloqueia
+RESEND_API_KEY = clean_env('RESEND_API_KEY')
+DEFAULT_FROM_EMAIL = "onboarding@resend.dev"
 
 # Localização
 LANGUAGE_CODE = 'pt-br'
