@@ -37,14 +37,14 @@ def contato_view(request):
                 request, "Por favor, preencha todos os campos corretamente.")
             return redirect('contato')
 
-        # --- BLOCO ANTI-SPAM ---
+        # --- BLOCO ANTI-SPAM (3 mensagens em 24h) ---
         tempo_limite = timezone.now() - timedelta(hours=24)
-        contagem_mensagens = Contato.objects.filter(
+        contagem = Contato.objects.filter(
             contato_retorno=v_contato,
             data_envio__gte=tempo_limite
         ).count()
 
-        if contagem_mensagens >= 3:
+        if contagem >= 3:
             messages.error(
                 request, "Limite diário atingido. Tente novamente em 24h.")
             return redirect('contato')
@@ -60,38 +60,24 @@ def contato_view(request):
             # 3. Configura o E-mail HTML
             assunto_email = f"🚀 Novo Contato: {v_assunto}"
             html_content = f"""
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0d1117; padding: 40px 0;">
-                <tr>
-                    <td align="center">
-                        <table width="700" border="0" cellspacing="0" cellpadding="0" style="background-color: #161b22; border: 1px solid #30363d; border-radius: 20px; overflow: hidden;">
-                            <tr>
-                                <td align="center" style="background: linear-gradient(135deg, #007bff 0%, #00ffff 100%); padding: 50px;">
-                                    <h1 style="margin: 0; font-family: Arial; color: #ffffff;">NOVO CONTATO</h1>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 60px; font-family: Arial; color: #f0f6fc;">
-                                    <p style="font-size: 20px;">Olá, <strong>Washington</strong>!</p>
-                                    <p><strong>Assunto:</strong> {v_assunto}</p>
-                                    <p><strong>Contato:</strong> {v_contato}</p>
-                                    <hr style="border: 0; border-top: 1px solid #30363d; margin: 20px 0;">
-                                    <p style="line-height: 1.6; text-align: justify;">{v_mensagem}</p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
+            <div style="font-family: Arial, sans-serif; background-color: #0d1117; color: #f0f6fc; padding: 20px;">
+                <h2 style="color: #007bff;">Novo Contato Recebido</h2>
+                <p><strong>De:</strong> {v_contato}</p>
+                <p><strong>Assunto:</strong> {v_assunto}</p>
+                <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d;">
+                    {v_mensagem}
+                </div>
+            </div>
             """
             text_content = strip_tags(html_content)
 
-            # 4. Envio do E-mail (fail_silently=True impede o Erro 500)
+            # 4. Envio do E-mail (Blindado com fail_silently)
             send_mail(
                 assunto_email,
                 text_content,
                 settings.EMAIL_HOST_USER,
                 ['washingtongui678@gmail.com'],
-                fail_silently=True,
+                fail_silently=True,  # Impede Erro 500 se o Gmail falhar
                 html_message=html_content,
             )
 
@@ -100,8 +86,9 @@ def contato_view(request):
             return redirect('contato')
 
         except Exception as e:
-            print(f"Erro técnico: {e}")
-            messages.error(request, "Erro ao processar sua mensagem.")
+            print(f"Erro ao processar contato: {e}")
+            messages.error(
+                request, "Houve um erro técnico, mas sua mensagem foi gravada.")
             return redirect('contato')
 
     return render(request, 'contate-me.html')
