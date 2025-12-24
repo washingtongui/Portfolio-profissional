@@ -75,7 +75,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'setup.wsgi.application'
 
-# Database - Configuração para Railway (MySQL) com Limpeza de Aspas
+# Database - Configuração para Railway (MySQL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -83,7 +83,7 @@ DATABASES = {
         'USER': clean_env('DB_USER', 'root'),
         'PASSWORD': clean_env('DB_PASSWORD'),
         'HOST': clean_env('DB_HOST'),
-        'PORT': clean_env('DB_PORT', '12135'),  # Porta do seu .env
+        'PORT': clean_env('DB_PORT', '12135'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
@@ -113,6 +113,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = clean_env('EMAIL_USER')
 EMAIL_HOST_PASSWORD = clean_env('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Evita que o site trave se o Gmail demorar a responder
+EMAIL_TIMEOUT = 10
 
 # Localização
 LANGUAGE_CODE = 'pt-br'
