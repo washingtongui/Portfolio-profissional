@@ -3,18 +3,24 @@ venv/
 .venv/
 env/
 
-# SEGURANÇA: Arquivo de senhas do Railway
+# SEGURANÇA: Arquivo de senhas e chaves
 .env
 
-# Banco de dados local
+# Banco de dados local (SQLite)
 db.sqlite3
+*.sqlite3
 
 # Arquivos temporários do Python
 __pycache__/
 *.pyc
 
-# Configurações do VS Code
+# Arquivos Estáticos e Media (Deploy)
+staticfiles/
+media/
+
+# Configurações do VS Code e editores
 .vscode/
+.idea/
 
 # Arquivos de sistema
 .DS_Store
