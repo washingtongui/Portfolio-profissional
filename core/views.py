@@ -19,9 +19,9 @@ def perfil(request):
 
 
 def projetos(request):
-    return render(request, 'projetos.html')
+    return render(request, 'projects.html')
 
-# --- LÓGICA DE CONTATO (DESIGN AMPLO, JUSTIFICADO E NOMINAL) ---
+# --- LÓGICA DE CONTATO ---
 
 
 def contato_view(request):
@@ -31,24 +31,23 @@ def contato_view(request):
         v_contato = request.POST.get('contato', '').strip()
         v_mensagem = request.POST.get('mensagem', '').strip()
 
+        # --- VALIDAÇÕES ---
+        if not v_assunto or not v_contato or not v_mensagem:
+            messages.error(
+                request, "Por favor, preencha todos os campos corretamente.")
+            return redirect('contato')
+
         # --- BLOCO ANTI-SPAM ---
-        LIMITE_DIARIO = 3
         tempo_limite = timezone.now() - timedelta(hours=24)
         contagem_mensagens = Contato.objects.filter(
             contato_retorno=v_contato,
             data_envio__gte=tempo_limite
         ).count()
 
-        if contagem_mensagens >= LIMITE_DIARIO:
+        if contagem_mensagens >= 3:
             messages.error(
                 request, "Limite diário atingido. Tente novamente em 24h.")
-            return render(request, 'contate-me.html')
-
-        # --- VALIDAÇÕES ---
-        if not v_assunto or not v_contato or not v_mensagem:
-            messages.error(
-                request, "Por favor, preencha todos os campos corretamente.")
-            return render(request, 'contate-me.html')
+            return redirect('contato')
 
         try:
             # 2. Salva no Banco de Dados
@@ -58,59 +57,25 @@ def contato_view(request):
                 mensagem=v_mensagem
             )
 
-            # 3. Configura o E-mail HTML (Elegante, Largo e Justificado)
+            # 3. Configura o E-mail HTML
             assunto_email = f"🚀 Novo Contato: {v_assunto}"
-
             html_content = f"""
             <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0d1117; padding: 40px 0;">
                 <tr>
                     <td align="center">
-                        <table width="700" border="0" cellspacing="0" cellpadding="0" style="background-color: #161b22; border: 1px solid #30363d; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
-                            
+                        <table width="700" border="0" cellspacing="0" cellpadding="0" style="background-color: #161b22; border: 1px solid #30363d; border-radius: 20px; overflow: hidden;">
                             <tr>
                                 <td align="center" style="background: linear-gradient(135deg, #007bff 0%, #00ffff 100%); padding: 50px;">
-                                    <h1 style="margin: 0; font-family: 'Segoe UI', Arial, sans-serif; font-size: 30px; color: #ffffff; text-transform: uppercase; letter-spacing: 4px; font-weight: 800;">
-                                        Novo Contato
-                                    </h1>
+                                    <h1 style="margin: 0; font-family: Arial; color: #ffffff;">NOVO CONTATO</h1>
                                 </td>
                             </tr>
-
                             <tr>
-                                <td style="padding: 60px; font-family: 'Segoe UI', Arial, sans-serif; color: #f0f6fc;">
-                                    <p style="font-size: 22px; margin-bottom: 25px;">Olá, <strong style="color: #00ffff;">Washington</strong>!</p>
-                                    <p style="font-size: 18px; color: #8b949e; line-height: 1.6; margin-bottom: 35px;">
-                                        Você recebeu uma nova interação através do seu portfólio. Confira os detalhes:
-                                    </p>
-                                    
-                                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid #30363d; border-radius: 12px; padding: 30px; margin-bottom: 40px;">
-                                        <p style="margin: 0 0 15px 0; font-size: 17px;">
-                                            <strong style="color: #58a6ff;">📌 Assunto:</strong> 
-                                            <span style="color: #f0f6fc;">{v_assunto}</span>
-                                        </p>
-                                        <p style="margin: 0; font-size: 17px;">
-                                            <strong style="color: #58a6ff;">📧 Contato:</strong> 
-                                            <a href="mailto:{v_contato}" style="color: #00ffff; text-decoration: none;">{v_contato}</a>
-                                        </p>
-                                    </div>
-
-                                    <div style="background: #0d1117; padding: 40px; border-radius: 15px; border: 1px solid #30363d;">
-                                        <p style="margin: 0 0 15px 0; color: #8b949e; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Mensagem Recebida:</p>
-                                        <div style="font-size: 18px; color: #c9d1d9; line-height: 1.8; text-align: justify; white-space: pre-line;">
-                                            {v_mensagem}
-                                        </div>
-                                    </div>
-
-                                    <div style="margin-top: 50px; text-align: center;">
-                                        <a href="mailto:{v_contato}" style="background: #238636; color: #ffffff; padding: 20px 50px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 18px; display: inline-block;">
-                                            Responder agora
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td align="center" style="background: #0d1117; padding: 30px; font-family: Arial, sans-serif; font-size: 13px; color: #484f58; border-top: 1px solid #30363d;">
-                                    Notificação Automática • <strong>Washington Tom</strong> • 2025
+                                <td style="padding: 60px; font-family: Arial; color: #f0f6fc;">
+                                    <p style="font-size: 20px;">Olá, <strong>Washington</strong>!</p>
+                                    <p><strong>Assunto:</strong> {v_assunto}</p>
+                                    <p><strong>Contato:</strong> {v_contato}</p>
+                                    <hr style="border: 0; border-top: 1px solid #30363d; margin: 20px 0;">
+                                    <p style="line-height: 1.6; text-align: justify;">{v_mensagem}</p>
                                 </td>
                             </tr>
                         </table>
@@ -118,16 +83,15 @@ def contato_view(request):
                 </tr>
             </table>
             """
-
             text_content = strip_tags(html_content)
 
-            # 4. Envio do E-mail
+            # 4. Envio do E-mail (fail_silently=True impede o Erro 500)
             send_mail(
                 assunto_email,
                 text_content,
                 settings.EMAIL_HOST_USER,
-                [settings.EMAIL_HOST_USER],
-                fail_silently=False,
+                ['washingtongui678@gmail.com'],
+                fail_silently=True,
                 html_message=html_content,
             )
 
@@ -136,8 +100,8 @@ def contato_view(request):
             return redirect('contato')
 
         except Exception as e:
-            messages.error(request, "Erro técnico ao processar contato.")
-            print(f"Erro: {e}")
-            return render(request, 'contate-me.html')
+            print(f"Erro técnico: {e}")
+            messages.error(request, "Erro ao processar sua mensagem.")
+            return redirect('contato')
 
     return render(request, 'contate-me.html')
