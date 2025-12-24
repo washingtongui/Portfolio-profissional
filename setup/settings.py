@@ -1,15 +1,27 @@
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
+from dotenv import load_dotenv
 
 # Caminho base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- SEGURANÇA ---
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-24zdo%4hu76s97ad4n')
+# --- CARREGAR VARIÁVEIS DO .ENV ---
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-# DEBUG como False em produção para evitar exposição de dados
-DEBUG = os.getenv('DEBUG', 'False').upper() == 'TRUE'
+# --- FUNÇÃO PARA LIMPAR ASPAS DO RAILWAY ---
+
+
+def clean_env(name, default=None):
+    value = os.getenv(name, default)
+    if value and isinstance(value, str):
+        return value.strip('"').strip("'")
+    return value
+
+
+# --- SEGURANÇA ---
+SECRET_KEY = clean_env('SECRET_KEY', 'django-insecure-24zdo%4hu76s97ad4n')
+DEBUG = clean_env('DEBUG', 'False').upper() == 'TRUE'
 
 ALLOWED_HOSTS = ['*', '.up.railway.app']
 
@@ -63,15 +75,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'setup.wsgi.application'
 
-# Database - Configuração para Railway (MySQL)
+# Database - Configuração para Railway (MySQL) com Limpeza de Aspas
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'railway'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', '3306'),
+        'NAME': clean_env('DB_NAME', 'railway'),
+        'USER': clean_env('DB_USER', 'root'),
+        'PASSWORD': clean_env('DB_PASSWORD'),
+        'HOST': clean_env('DB_HOST'),
+        'PORT': clean_env('DB_PORT', '12135'),  # Porta do seu .env
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
@@ -98,9 +110,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_USER')  # Crucial para o Gmail aceitar
+EMAIL_HOST_USER = clean_env('EMAIL_USER')
+EMAIL_HOST_PASSWORD = clean_env('EMAIL_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Localização
 LANGUAGE_CODE = 'pt-br'
