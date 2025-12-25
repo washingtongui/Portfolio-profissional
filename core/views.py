@@ -1,4 +1,4 @@
-import resend  # Certifique-se de ter rodado 'pip install resend'
+import resend
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Contato
@@ -23,7 +23,7 @@ def projetos(request):
     """Renderiza a página de projetos."""
     return render(request, 'projetos.html')
 
-# --- VIEW DE CONTATO COM DESIGN AMPLO E TEXTO GRANDE ---
+# --- VIEW DE CONTATO COM DESIGN RESPONSIVO ---
 
 
 def contato_view(request):
@@ -60,44 +60,44 @@ def contato_view(request):
                 "to": ["washingtongui678@gmail.com"],
                 "subject": f"🚀 Novo Contato: {v_assunto}",
                 "html": f"""
-                <div style="background-color: #12151c; padding: 50px 20px; font-family: 'Segoe UI', Arial, sans-serif; text-align: center;">
-                    <div style="max-width: 650px; margin: 0 auto; background-color: #1c222d; border-radius: 24px; overflow: hidden; color: #ffffff; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.4);">
+                <div style="background-color: #12151c; padding: 20px 10px; font-family: 'Segoe UI', Arial, sans-serif; text-align: center;">
+                    <div style="display: inline-block; width: 100%; max-width: 600px; background-color: #1c222d; border-radius: 20px; overflow: hidden; color: #ffffff; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin: 0 auto;">
                         
-                        <div style="background: linear-gradient(135deg, #007bff, #00f2fe); padding: 60px 40px; text-align: center;">
-                            <h1 style="margin: 0; font-size: 36px; letter-spacing: 4px; text-transform: uppercase; font-weight: 800; line-height: 1.1; color: #ffffff;">
-                                NOVO<br>ALERTA DE<br>CONTATO
+                        <div style="background: linear-gradient(135deg, #007bff, #00f2fe); padding: 40px 20px; text-align: center;">
+                            <h1 style="margin: 0; font-size: 26px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; line-height: 1.2; color: #ffffff;">
+                                NOVO ALERTA DE<br>CONTATO
                             </h1>
                         </div>
 
-                        <div style="padding: 50px 50px;">
-                            <p style="font-size: 24px; margin-bottom: 25px; font-weight: 600;">Olá Tom,</p>
+                        <div style="padding: 30px 20px;">
+                            <p style="font-size: 20px; margin-bottom: 20px; font-weight: 600;">Olá Tom,</p>
                             
-                            <p style="font-size: 19px; color: #a0a6b5; line-height: 1.8; margin-bottom: 40px;">
-                                Você recebeu uma nova mensagem através do seu formulário de portfólio. Confira os detalhes abaixo:
+                            <p style="font-size: 16px; color: #a0a6b5; line-height: 1.6; margin-bottom: 30px;">
+                                Você recebeu uma nova mensagem através do seu formulário de portfólio. Confira os detalhes:
                             </p>
 
-                            <div style="border-left: 6px solid #00f2fe; padding-left: 30px; margin-bottom: 45px;">
-                                <p style="margin: 0 0 25px 0; font-size: 19px; line-height: 1.6;">
-                                    <strong style="color: #00f2fe; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Assunto:</strong><br>
-                                    <span style="font-size: 22px; font-weight: bold;">{v_assunto}</span>
+                            <div style="border-left: 4px solid #00f2fe; padding-left: 15px; margin-bottom: 35px;">
+                                <p style="margin: 0 0 20px 0; font-size: 16px;">
+                                    <strong style="color: #00f2fe; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Assunto:</strong><br>
+                                    <span style="font-size: 18px; font-weight: bold;">{v_assunto}</span>
                                 </p>
-                                <p style="margin: 0; font-size: 19px; line-height: 1.6;">
-                                    <strong style="color: #00f2fe; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">E-mail de Retorno:</strong><br>
-                                    <a href="mailto:{v_contato}" style="color: #4da3ff; text-decoration: none; font-size: 20px; font-weight: bold; border-bottom: 1px solid #4da3ff;">{v_contato}</a>
+                                <p style="margin: 0; font-size: 16px;">
+                                    <strong style="color: #00f2fe; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">E-mail de Retorno:</strong><br>
+                                    <a href="mailto:{v_contato}" style="color: #4da3ff; text-decoration: none; font-size: 18px; font-weight: bold; border-bottom: 1px solid #4da3ff;">{v_contato}</a>
                                 </p>
                             </div>
 
-                            <div style="background-color: #252c39; padding: 40px; border-radius: 18px; border: 1px solid #333d4f;">
-                                <p style="margin: 0 0 15px 0; color: #00f2fe; font-weight: bold; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">
+                            <div style="background-color: #252c39; padding: 25px 20px; border-radius: 12px; border: 1px solid #333d4f;">
+                                <p style="margin: 0 0 10px 0; color: #00f2fe; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
                                     Mensagem:
                                 </p>
-                                <p style="margin: 0; font-style: italic; color: #ffffff; line-height: 1.9; font-size: 20px;">
+                                <p style="margin: 0; font-style: italic; color: #ffffff; line-height: 1.7; font-size: 17px; word-break: break-word;">
                                     "{v_mensagem}"
                                 </p>
                             </div>
 
-                            <div style="margin-top: 60px; text-align: center; border-top: 1px solid #333d4f; padding-top: 30px;">
-                                 <p style="font-size: 14px; color: #5d6675; letter-spacing: 1px;">ENVIADO PELO SEU SISTEMA DE PORTFÓLIO</p>
+                            <div style="margin-top: 45px; text-align: center; border-top: 1px solid #333d4f; padding-top: 25px;">
+                                 <p style="font-size: 11px; color: #5d6675; letter-spacing: 1px; margin: 0;">ENVIADO PELO SEU SISTEMA DE PORTFÓLIO</p>
                             </div>
                         </div>
                     </div>
